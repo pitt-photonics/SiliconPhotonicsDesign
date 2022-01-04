@@ -74,6 +74,13 @@ for (i=1:length(V)){
   setnamed(filename_mzi,'V_cathode_index',i);
   findmodes;
   neff(i) = getdata('mode1','neff');
+  
+  if (abs(V(i)) < 1e-3) {
+      ?V(i);
+      ?getdata('mode1','neff');
+      ?getdata('mode1','loss');
+      ?getdata('mode1','ng');
+  }
 }
 
 # write out
@@ -88,4 +95,3 @@ plot(V,alpha_dB_cm, "Voltage (V)", "loss (dB/cm)");
 
 data = [V,dneff,imag(neff)];
 write("modulator_neff_V.dat",num2str(data));  # for INTERCONNECT
-

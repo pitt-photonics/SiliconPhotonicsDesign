@@ -10,6 +10,18 @@ newproject; redrawoff;
 # modulator geometry variables defined:
 modulator_setup_parameters;
 
+addmodelmaterial;
+set('name', 'Si (Silicon)');
+addmaterialproperties('CT','Si (Silicon)');
+
+addmodelmaterial;
+set('name','Al (Aluminium) - CRC');
+addmaterialproperties('CT','Al (Aluminium) - CRC');
+
+addmodelmaterial;
+set('name','SiO2 (Glass) - Sze');
+addmaterialproperties('CT','SiO2 (Glass) - Sze');
+
 # draw geometry
 addrect; 			# rib
 set('name','rib');
@@ -48,7 +60,7 @@ set('x',center_contact);
 addrect; 			# oxide
 set('name','oxide');
 set('material','SiO2 (Glass) - Sze');
-set('override mesh order from material database',1); set('mesh order',5);
+set('mesh order',5);
 set('override color opacity from material database',1); set('alpha',0.3);
 set('x',x_center); set('x span',x_span);
 set('y',y_center); set('y span',y_span);
@@ -58,6 +70,8 @@ set('z',z_center); set('z span',z_span);
 addchargesolver;
 set('min edge length',min_edge_length);
 set('max edge length',max_edge_length);
+
+select('simulation region');
 set('x',x_center); set('x span',x_span-0.1e-6);
 set('y',y_center); set('y span',y_span);
 set('z',z_center); set('z span',z_span);
@@ -160,20 +174,29 @@ set('save data',1);
 set('filename',filename_mzi);
 
 # set contacts (boundary conditions)
-addbc('electrical contact','anode');		# anode
-setbc('anode','geometry','anode:');
-addbc('electrical contact','cathode');		# cathode
-setbc('cathode','geometry','cathode:');
-setbc('cathode','steady state','fixed contact',0);
-setbc('cathode','steady state','range start',voltage_start);
-setbc('cathode','steady state','range stop',voltage_stop);
-setbc('cathode','steady state','range interval',voltage_interval);
+addelectricalcontact;
+set('name','anode');		# anode
+set('bc mode','steady state');
+set('sweep type','single');
+set('voltage',0);
+set('surface type', 'solid');
+set('solid','anode');
+
+addelectricalcontact;
+set('name','cathode');
+set('surface type', 'solid');
+set('solid','cathode');
+
+set('bc mode','steady state');
+set('sweep type','range');
+set('range start',voltage_start);
+set('range stop',voltage_stop);
+set('range interval',voltage_interval);
 
 # 1) Simulate the DC characteristics of the junction, 
 #    export the spatial charge density, for different voltages
 save('pn_wg_dcsweep.ldev');
 run;
-
 
 # 2) Calculates the junction capacitance versus voltage.
 #    compare with experimental results
@@ -188,12 +211,18 @@ vdv = matrix(2*N,1);
 vdv(1:2:(2*N)) = linspace(vmin,vmax,N);
 vdv(2:2:(2*N)) = vdv(1:2:(2*N)) + sign(vmax)*dv;
 
+pause;
+
 switchtolayout;
 
 # set contact bias
-setbc('cathode','steady state','voltage table',vdv);
-setbc('cathode','steady state','dc mode',2);
-setbc('cathode','steady state','fixed contact',0);
+select('CHARGE::boundary conditions::cathode');
+set('sweep type','value');
+set('value table',vdv);
+
+# set correct solver parameters (need Fermi stats for high doping)
+setnamed('CHARGE','solver type','newton');
+#setnamed('CHARGE','fermi statistics',true);
 
 # refine mesh for C calculation
 setnamed('CHARGE::wg mesh','enabled',1);
@@ -217,6 +246,7 @@ V = vdv(1:2:(2*N));
 
 # Final result:
 plotxy(V,0.5*(Cn+Cp)*1e15*1e-6,CV_baehrjones(1:11,1),CV_baehrjones(1:11,2),"Voltage (V)","Capacitance (fF/um)");
+legend('TCAD Model','Experimental');
 
 #
 # 3) Calculate the resistance in each slab
@@ -229,24 +259,31 @@ set('material','Al (Aluminium) - CRC');
 set('x',x_center); set('x span', 0.5*width_rib);
 set('y',y_center); set('y span',y_span);
 set('z min',z_center); set('z max',thick_slab+thick_rib+thick_contact);
-set('override mesh order from material database',1);
 set('mesh order',1);
 
 vtest_max = 0.5;
-addbc('electrical contact','r_test');
-setbc('r_test','geometry','r_contact:');
-setbc('r_test','steady state','fixed contact',0);
-setbc('r_test','steady state','range start',0);
-setbc('r_test','steady state','range stop',vtest_max);
-setbc('r_test','steady state','range interval',0.1);
+addelectricalcontact;
+set('name','r_test');
+set('surface type', 'solid');
+set('solid','r_contact');
 
-setbc('anode','steady state','fixed contact',1);
-setbc('cathode','steady state','fixed contact',1);
+set('bc mode','steady state');
+set('sweep type','range');
+set('range start',0);
+set('range stop',vtest_max);
+set('range interval',0.1);
 
-setnamed('CHARGE','x',x_center); 
-setnamed('CHARGE','x span',x_span-0.1e-6);
+setnamed('CHARGE::boundary conditions::anode','bc mode','steady state');
+setnamed('CHARGE::boundary conditions::anode','sweep type','single');
+setnamed('CHARGE::boundary conditions::anode','voltage',0);
+setnamed('CHARGE::boundary conditions::cathode','bc mode','steady state');
+setnamed('CHARGE::boundary conditions::cathode','sweep type','single');
+setnamed('CHARGE::boundary conditions::cathode','voltage',0);
+
+setnamed('simulation region','x',x_center); 
+setnamed('simulation region','x span',x_span-0.1e-6);
 setnamed('CHARGE','solver type','newton');
-setnamed('CHARGE','x min',x_center);
+setnamed('simulation region','x min',x_center);
  
 save('pn_wg_R.ldev');
 run;
@@ -257,9 +294,9 @@ Itest_max = abs(Itest(length(Itest)));
 ?"R_cathode = " + num2str(vtest_max/Itest_max * getnamed('CHARGE','norm length')/0.01) + " Ohm-cm";
 
 switchtolayout;
-setnamed('CHARGE','x',x_center); 
-setnamed('CHARGE','x span',x_span-0.1e-6);
-setnamed('CHARGE','x max',x_center);
+setnamed('simulation region','x',x_center); 
+setnamed('simulation region','x span',x_span-0.1e-6);
+setnamed('simulation region','x max',x_center);
  
 run;
 
