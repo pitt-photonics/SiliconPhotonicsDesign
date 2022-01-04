@@ -28,8 +28,8 @@ setnamed(elementName,'x position',300);
 setnamed(elementName,'y position',400);
 setnamed(elementName, 'passivity','test'); # make sure s-param file gets tested
 setnamed(elementName, 'reciprocity','test');
-setnamed(elementName, 'load from file','true');
-setnamed(elementName, 's parameters filename', 'dc_R=5,gap=200,Lc=0,wg=500.sparam'); 
+setnamed(elementName, 'load from file',true);
+setnamed(elementName, 's parameters filename', 'dc_gap=200nm_Lc=10um.sparam'); 
 setnamed(elementName, 'name', 'Directional Coupler 1');
 
 copy(0,200);
@@ -51,13 +51,17 @@ setnamed(elementName, 'name','WG');
 elementName = addelement('Optical Modulator Measured');
 setnamed(elementName, 'x position', 150);
 setnamed(elementName, 'y position',500);
-flipelement(elementName);
 rotateelement(elementName);
-setnamed(elementName, 'operating frequency', 'user defined');
+rotateelement(elementName);
+rotateelement(elementName);
+flipelement(elementName);
 setnamed(elementName, 'frequency', 193.1e12);
 setnamed(elementName, 'length', pi*30e-6);
 setnamed(elementName, 'load from file', false);
 setnamed(elementName, 'measurement type','effective index');
+# Create voltage-dependent measurement data: [V_applied, Re(neff), Im(neff)]
+neff=[-5, 0.001, 1e-5; 0, 0, 0];
+setnamed(elementName, 'measurement', neff);
 setnamed(elementName, 'name','Phase Modulator');
 
 #Add DC source 
