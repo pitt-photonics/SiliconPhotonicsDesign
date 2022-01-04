@@ -10,8 +10,8 @@ setglobalsource("wavelength start",1500e-9);
 setglobalsource("wavelength stop",1600e-9);
 setglobalmonitor("use source limits",0); 
 setglobalmonitor("frequency points",1);
-setglobalmonitor("minimum wavelength",1550e-9);	
-setglobalmonitor("maximum wavelength",1550e-9);
+#setglobalmonitor("minimum wavelength",1550e-9);	
+#setglobalmonitor("maximum wavelength",1550e-9);
 
 # add mode source:
 addmode; set("name", "source");
@@ -53,7 +53,7 @@ for (i=1:length(DC_length_list))
   set("x min", minvxWAFER-DC_length/2); set("x max", maxvxWAFER+ DC_length/2); 
   select("FDTD");
   set("x min", minvxWAFER+2e-6-DC_length/2);  set("x max", maxvxWAFER-2e-6+DC_length/2);
-  groupscope("GDS_LAYER_1");  selectall;
+  groupscope("GDS_LAYER_1:0");  selectall;
   set("x",-DC_length/2,1);  set("x",-DC_length/2,2);
   set("x", DC_length/2,3);  set("x", DC_length/2,4);
   groupscope("::model");

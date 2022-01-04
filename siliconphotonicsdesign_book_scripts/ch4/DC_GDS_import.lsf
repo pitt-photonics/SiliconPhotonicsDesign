@@ -1,4 +1,5 @@
 # DC_GDS_import.lsf - Script to import GDS for 3D FDTD simulations in Lumerical Solutions
+switchtolayout; deleteall;
 
 newproject;
 filename = "DC.gds";   	cellname = "DC_0";
@@ -20,7 +21,7 @@ maxvzWAFER=Thickness_Si;
 # Waveguide     Si 220nm    
 n = gdsimport(filename, cellname, 1, Material_Si, 0, Thickness_Si);
 if (n==0) { delete; } else {
-	groupscope("::model::GDS_LAYER_1");
+	groupscope("::model::GDS_LAYER_1:0");
 	set("script","");
 	selectall;
 	set('material', Material_Si);

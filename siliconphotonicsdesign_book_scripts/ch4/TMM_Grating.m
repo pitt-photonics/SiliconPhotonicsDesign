@@ -64,7 +64,7 @@ for i=1:length(wavelength)
 	T(:,:,i)=Tp(:,:,i)^NG; % 1st order uniform Bragg grating
 
 	% for an FP cavity, 1st order cavity, insert a high index region, n2.
-	T(:,:,i)=Tp(:,:,i)^NG * (T_hw2(:,:,i))^1 * Tp(:,:,i)^NG * T_hw2(:,:,i);
+% 	T(:,:,i)=Tp(:,:,i)^NG * (T_hw2(:,:,i))^1 * Tp(:,:,i)^NG * T_hw2(:,:,i);
 end
 
 function T_hw=TMM_HomoWG_Matrix(wavelength,l,neff,loss)
