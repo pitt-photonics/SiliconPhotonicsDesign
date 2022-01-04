@@ -53,7 +53,7 @@ set('distance from waist',10e-6);
 
 # global properties
 setglobalmonitor('frequency points',frequency_points);
-setglobalmonitor('use linear wavelength spacing',1);
+setglobalmonitor('use wavelength spacing',1);
 setglobalmonitor('use source limits',1);
 setglobalsource('center wavelength',lambda);
 setglobalsource('wavelength span',wl_span);

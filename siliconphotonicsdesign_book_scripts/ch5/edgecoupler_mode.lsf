@@ -4,8 +4,8 @@ closeall; redrawoff;
 
 wg_list=[180e-9];
 t_list=[220e-9];
-lambda_list=[1.31e-6, 1.55e-6];
-NA_list=0.1:0.02:0.8;
+lambda_list=[1.55e-6];
+NA_list=0.1:0.05:0.8;
 PLOT_misalignment = 1;
 PLOT_modeprofiles = 1;
 

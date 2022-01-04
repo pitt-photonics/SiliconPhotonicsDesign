@@ -115,13 +115,14 @@ setnamed("EME::Ports::port_1", "y span", 5.5e-6);
 setnamed("EME::Ports::port_1", "z", 0);
 setnamed("EME::Ports::port_1", "z span", 7e-6);
 setnamed("EME::Ports::port_1", "mode selection", "fundamental mode");
+#setnamed("EME::Ports::port_1", "mode selection", "fundamental TE mode");
 
 setnamed("EME::Ports::port_2", "y", 0);
 setnamed("EME::Ports::port_2", "y span", 5.5e-6);
 setnamed("EME::Ports::port_2", "z", 0);
 setnamed("EME::Ports::port_2", "z span", 7e-6);
 setnamed("EME::Ports::port_2", "mode selection", "fundamental mode");
-
+#setnamed("EME::Ports::port_2", "mode selection", "fundamental TE mode");
 
 addmesh; #mesh override. 
 set("x",0); set("x span", 10e-6); 
@@ -169,6 +170,9 @@ emesweep;
 
 S = getemesweep('S');
 
+plot(S.group_span_2*1e6,abs(S.s21)^2,"taper length (um)","Transmission");
+legend('Transmission into SiON mode');
+
 # ********************************************************************************
 # Account for fiber overlap
 # ********************************************************************************
@@ -186,17 +190,23 @@ set("x", 8e-6);
 setanalysis("wavelength", 1.5e-6); 
 findmodes;
 
+## find out which mode is TE and which is TM
+#pol1=getdata('mode1','TE polarization fraction');
+#pol2=getdata('mode2','TE polarization fraction');
+#if (pol1 > 0.8) { TEmode='mode1'; }  if (pol2 > 0.8) { TEmode='mode2'; }
+#if (pol1 < 0.2) { TMmode='mode1'; }  if (pol2 < 0.2) { TMmode='mode2'; }
+
 # Create fiber mode
 setanalysis("NA",0.4);
 setanalysis("beam direction","2D X normal");
 createbeam;
 
 setanalysis("shift d-card center",1);
-out = overlap("mode1","gaussian1",0,0,getnamed("SiON","z"));
+out = overlap(TEmode,"gaussian1",0,0,getnamed("SiON","z"));
 power = out(2);
 
 # ********************************************************************************
 # Plot result
 # ********************************************************************************
-plot(S.group_span_2,abs(S.s21)^2,(abs(S.s21)^2)*out(2),"taper length (um)","Transmission");
+plot(S.group_span_2*1e6,abs(S.s21)^2,(abs(S.s21)^2)*out(2),"taper length (um)","Transmission");
 legend('Transmission into SiON mode', 'Transmission into fibre');
