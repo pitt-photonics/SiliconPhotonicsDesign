@@ -10,6 +10,7 @@ TE_pol = matrix (length(thick_Si_list), length(mode_list) );
 
 select("MODE");
 set("number of trial modes",max(mode_list)+2);
+pol = cell(length(mode_list));
 
 for(kk=1:length(thick_Si_list))
 {
@@ -22,8 +23,8 @@ for(kk=1:length(thick_Si_list))
 		neff_slab (kk,m) =abs( getdata ("MODE::data::mode"+num2str(m),"neff") );
 		TE_pol(kk,m) = getdata("MODE::data::mode"+num2str(m),"TE polarization fraction");
 		if ( TE_pol(kk,m) > 0.5 )
-			{     pol = "TE";   }  else   {   pol = "TM";   }
+			{     pol{m} = "Mode "+num2str(m)+" (TE)";   }  else   {   pol{m} = "Mode "+num2str(m)+" (TM)";   }
 	 }
 }
-plot ( thick_Si_list, neff_slab);
-# matlabsave ("wg_mode_neff_sweep_slab"); # save the data for plotting in Matlab.
+holdon;
+plot(thick_Si_list*1e9, neff_slab, "Slab Thickness (nm)", "Effective Index"); legend(pol);

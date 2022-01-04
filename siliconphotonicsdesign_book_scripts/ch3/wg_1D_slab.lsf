@@ -1,6 +1,6 @@
 # wg_1D_slab.lsf - setup the Lumerical MODE 1D simulation
 
-wg_2D_draw;                # draw the waveguide
+wg_1D_draw;                # draw the waveguide
 
 wavelength=1.55e-6;
 meshsize = 10e-9; # mesh size

@@ -2,6 +2,12 @@
 
 wg_2D_draw;   # run script to draw the waveguide
 
+strip = 1;   # strip or rib wg?
+if (strip) {
+    select('slab'); 
+    delete;
+}
+
 # define simulation parameters
 wavelength    = 1.55e-6;   
 meshsize      = 20e-9;       # maximum mesh size

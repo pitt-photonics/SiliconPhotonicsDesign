@@ -63,7 +63,7 @@ for (i=1:n) {
 		E3=pinch(getelectric('FDE::data::mode1')); y=getdata('FDE::data::mode1','y'); z=getdata('FDE::data::mode1','z'); 
 		image(y,z,E3); 
 		exportfigure('out/bend_mode_profile_radius'+ num2str(radii(i))); 
-		matlabsave('out/bend_mode_profile_radius'+ num2str(radii(i)), y,z,E3);
+		#matlabsave('out/bend_mode_profile_radius'+ num2str(radii(i)), y,z,E3);
 	}
 }
 PropagationLoss=2 *100; # dB/cm *100 --- dB/m
@@ -72,5 +72,5 @@ LossR=LossPerBend (2:n)-LossPerBend(1);
 LossP=PropagationLoss*2*pi*radii(2:n)/4; # quarter turn
 plot ( radii (2:n)*1e6, LossMM, LossR, LossP, LossMM+LossR+LossP, "Radius [micron]", "Loss [dB]" ,"Bend Loss", "loglog, plot points");
 legend ('Mode Mismatch Loss', 'Radiation loss','2 dB/cm propagation loss', 'Total Loss');
-matlabsave ('out/bend_MODE_profiles_coupling', radii, power_coupling, LossPerBend);
+#matlabsave ('out/bend_MODE_profiles_coupling', radii, power_coupling, LossPerBend);
 
