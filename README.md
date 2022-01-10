@@ -2,5 +2,4 @@
 
 Example scripts (Lumerical Solutions, Matlab, Mentor Graphics).
 
-Download a ZIP file of this repository: https://github.com/lukasc-ubc/SiliconPhotonicsDesign/archive/master.zip
-
+Download a ZIP file of this repository: https://github.com/pitt-photonics/SiliconPhotonicsDesign/archive/refs/heads/master.zip
